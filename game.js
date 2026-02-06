@@ -6,6 +6,22 @@ const joystick = document.getElementById("joystick");
 const jumpButton = document.getElementById("jump");
 const runButton = document.getElementById("run");
 
+const spriteSources = {
+  player: "https://upload.wikimedia.org/wikipedia/en/9/99/MarioSMBW.png",
+  enemy: "https://upload.wikimedia.org/wikipedia/en/c/cc/Goomba.png",
+  grass: "https://upload.wikimedia.org/wikipedia/commons/3/3a/Grass_texture.jpg",
+  brick: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Brick_texture.jpg",
+  sky: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Blue_sky_001.jpg",
+};
+
+const sprites = Object.entries(spriteSources).reduce((acc, [key, src]) => {
+  const image = new Image();
+  image.src = src;
+  image.crossOrigin = "anonymous";
+  acc[key] = image;
+  return acc;
+}, {});
+
 const world = {
   gravity: 0.7,
   friction: 0.85,
@@ -24,6 +40,9 @@ const player = {
   velocityY: 0,
   speed: 4,
   jumpForce: 14,
+  jumpCharge: 0,
+  maxJumpCharge: 18,
+  facing: 1,
   onGround: false,
 };
 
@@ -40,7 +59,7 @@ const platforms = [
 ];
 
 const enemies = [
-  { x: 520, y: 280, width: 36, height: 32, velocityX: -1.2, alive: true },
+  { x: 660, y: 420, width: 36, height: 32, velocityX: -1.2, alive: true },
   { x: 980, y: 420, width: 36, height: 32, velocityX: 1.1, alive: true },
   { x: 1500, y: 388, width: 36, height: 32, velocityX: -1.3, alive: true },
   { x: 1980, y: 420, width: 36, height: 32, velocityX: 1.4, alive: true },
@@ -118,14 +137,21 @@ function updatePlayer() {
   const moveSpeed = player.speed * (input.run ? 1.6 : 1);
   if (input.left) {
     player.velocityX = -moveSpeed;
+    player.facing = -1;
   } else if (input.right) {
     player.velocityX = moveSpeed;
+    player.facing = 1;
   } else {
     player.velocityX *= world.friction;
   }
 
   if (input.jump && player.onGround) {
-    player.velocityY = -player.jumpForce;
+    player.jumpCharge = clamp(player.jumpCharge + 0.55, 0, player.maxJumpCharge);
+  }
+
+  if (!input.jump && player.jumpCharge > 0 && player.onGround) {
+    player.velocityY = -(player.jumpForce + player.jumpCharge);
+    player.jumpCharge = 0;
     player.onGround = false;
   }
 
@@ -140,6 +166,9 @@ function updatePlayer() {
         player.y = platform.y - player.height;
         player.velocityY = 0;
         player.onGround = true;
+        if (!input.jump) {
+          player.jumpCharge = 0;
+        }
       } else if (player.velocityY < 0) {
         player.y = platform.y + platform.height;
         player.velocityY = 1;
@@ -190,13 +219,34 @@ function respawn() {
 }
 
 function drawBackground() {
-  context.fillStyle = "#69c0ff";
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "#78c850";
-  context.fillRect(0, 420, canvas.width, 140);
+  if (sprites.sky.complete && sprites.sky.naturalWidth) {
+    context.drawImage(sprites.sky, 0, 0, canvas.width, canvas.height);
+  } else {
+    context.fillStyle = "#69c0ff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+  }
+
+  if (sprites.grass.complete && sprites.grass.naturalWidth) {
+    const pattern = context.createPattern(sprites.grass, "repeat");
+    if (pattern) {
+      context.fillStyle = pattern;
+      context.fillRect(0, 420, canvas.width, 140);
+    }
+  } else {
+    context.fillStyle = "#78c850";
+    context.fillRect(0, 420, canvas.width, 140);
+  }
 }
 
 function drawPlatform(platform) {
+  if (sprites.brick.complete && sprites.brick.naturalWidth) {
+    const pattern = context.createPattern(sprites.brick, "repeat");
+    if (pattern) {
+      context.fillStyle = pattern;
+      context.fillRect(platform.x, platform.y, platform.width, platform.height);
+      return;
+    }
+  }
   context.fillStyle = "#c68642";
   context.fillRect(platform.x, platform.y, platform.width, platform.height);
   context.fillStyle = "#7a4b1e";
@@ -204,6 +254,20 @@ function drawPlatform(platform) {
 }
 
 function drawPlayer() {
+  if (sprites.player.complete && sprites.player.naturalWidth) {
+    context.save();
+    context.translate(player.x + player.width / 2, player.y + player.height / 2);
+    context.scale(player.facing, 1);
+    context.drawImage(
+      sprites.player,
+      -player.width / 2,
+      -player.height / 2,
+      player.width,
+      player.height
+    );
+    context.restore();
+    return;
+  }
   context.fillStyle = "#ff3b30";
   context.fillRect(player.x, player.y, player.width, player.height);
   context.fillStyle = "#1f5da8";
@@ -217,6 +281,10 @@ function drawPlayer() {
 
 function drawEnemy(enemy) {
   if (!enemy.alive) return;
+  if (sprites.enemy.complete && sprites.enemy.naturalWidth) {
+    context.drawImage(sprites.enemy, enemy.x, enemy.y, enemy.width, enemy.height);
+    return;
+  }
   context.fillStyle = "#8b5a2b";
   context.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
   context.fillStyle = "#f5d6a0";
