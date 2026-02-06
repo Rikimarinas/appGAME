@@ -6,6 +6,18 @@ const joystick = document.getElementById("joystick");
 const jumpButton = document.getElementById("jump");
 const runButton = document.getElementById("run");
 
+const background = {
+  castle: new Image(),
+  ready: false,
+};
+
+background.castle.crossOrigin = "anonymous";
+background.castle.src =
+  "https://upload.wikimedia.org/wikipedia/commons/6/6d/Neuschwanstein_Castle_LOC_print.jpg";
+background.castle.onload = () => {
+  background.ready = true;
+};
+
 const world = {
   gravity: 0.7,
   friction: 0.85,
@@ -190,17 +202,67 @@ function respawn() {
 }
 
 function drawBackground() {
-  context.fillStyle = "#69c0ff";
+  const skyGradient = context.createLinearGradient(0, 0, 0, canvas.height);
+  skyGradient.addColorStop(0, "#6ac9ff");
+  skyGradient.addColorStop(0.5, "#b9e6ff");
+  skyGradient.addColorStop(0.72, "#fbe4a5");
+  skyGradient.addColorStop(1, "#f8d584");
+  context.fillStyle = skyGradient;
   context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "#78c850";
-  context.fillRect(0, 420, canvas.width, 140);
+
+  if (background.ready) {
+    const parallaxX = world.cameraX * 0.2;
+    const castleWidth = 820;
+    const castleHeight = 340;
+    const castleX = 120 - parallaxX;
+    const castleY = 40;
+    context.globalAlpha = 0.95;
+    context.drawImage(background.castle, castleX, castleY, castleWidth, castleHeight);
+    context.globalAlpha = 1;
+
+    const mist = context.createLinearGradient(0, 80, 0, 300);
+    mist.addColorStop(0, "rgba(255,255,255,0.55)");
+    mist.addColorStop(1, "rgba(255,255,255,0)");
+    context.fillStyle = mist;
+    context.fillRect(0, 60, canvas.width, 260);
+  }
+
+  const groundGradient = context.createLinearGradient(0, 360, 0, canvas.height);
+  groundGradient.addColorStop(0, "#88d06b");
+  groundGradient.addColorStop(0.5, "#5fa44e");
+  groundGradient.addColorStop(1, "#3e7e38");
+  context.fillStyle = groundGradient;
+  context.fillRect(0, 380, canvas.width, 160);
+
+  context.fillStyle = "rgba(0,0,0,0.15)";
+  context.fillRect(0, 414, canvas.width, 10);
 }
 
 function drawPlatform(platform) {
-  context.fillStyle = "#c68642";
-  context.fillRect(platform.x, platform.y, platform.width, platform.height);
-  context.fillStyle = "#7a4b1e";
-  context.fillRect(platform.x, platform.y, platform.width, 6);
+  const { x, y, width, height } = platform;
+  const bodyGradient = context.createLinearGradient(x, y, x, y + height);
+  bodyGradient.addColorStop(0, "#c89452");
+  bodyGradient.addColorStop(0.5, "#b47b3d");
+  bodyGradient.addColorStop(1, "#8b5a2b");
+  context.fillStyle = bodyGradient;
+  context.fillRect(x, y, width, height);
+
+  context.fillStyle = "#4e8f3a";
+  context.fillRect(x, y, width, 7);
+  context.fillStyle = "rgba(255,255,255,0.25)";
+  context.fillRect(x, y + 2, width, 2);
+
+  context.fillStyle = "rgba(0,0,0,0.2)";
+  context.fillRect(x, y + height - 6, width, 6);
+
+  context.fillStyle = "rgba(0,0,0,0.22)";
+  context.fillRect(x + 8, y + height + 4, width - 16, 6);
+
+  context.fillStyle = "rgba(255,255,255,0.18)";
+  for (let i = 0; i < width; i += 24) {
+    const rockHeight = 4 + Math.abs(Math.sin((x + i) * 0.08)) * 8;
+    context.fillRect(x + i + 6, y + height - rockHeight - 8, 6, rockHeight);
+  }
 }
 
 function drawPlayer() {
