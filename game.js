@@ -1,10 +1,113 @@
 const canvas = document.getElementById("game");
 const context = canvas.getContext("2d");
+context.imageSmoothingEnabled = false;
 const scoreLabel = document.getElementById("score");
 const livesLabel = document.getElementById("lives");
 const joystick = document.getElementById("joystick");
 const jumpButton = document.getElementById("jump");
 const runButton = document.getElementById("run");
+
+const TILE_SIZE = 32;
+
+const spriteSources = {
+  mario: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" shape-rendering="crispEdges">
+      <rect width="32" height="32" fill="none" />
+      <rect x="6" y="2" width="20" height="6" fill="#c5391b" />
+      <rect x="8" y="8" width="16" height="6" fill="#f5cfa0" />
+      <rect x="6" y="14" width="20" height="6" fill="#c5391b" />
+      <rect x="6" y="20" width="8" height="8" fill="#1f5da8" />
+      <rect x="18" y="20" width="8" height="8" fill="#1f5da8" />
+      <rect x="10" y="20" width="12" height="10" fill="#3b2a1a" />
+      <rect x="8" y="26" width="16" height="4" fill="#f5cfa0" />
+      <rect x="12" y="10" width="4" height="4" fill="#1b1b1b" />
+      <rect x="18" y="10" width="4" height="4" fill="#1b1b1b" />
+    </svg>
+  `,
+  goomba: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" shape-rendering="crispEdges">
+      <rect width="32" height="32" fill="none" />
+      <rect x="4" y="8" width="24" height="16" fill="#8b5a2b" />
+      <rect x="6" y="22" width="20" height="6" fill="#d6b38c" />
+      <rect x="8" y="14" width="6" height="6" fill="#1b1b1b" />
+      <rect x="18" y="14" width="6" height="6" fill="#1b1b1b" />
+      <rect x="10" y="16" width="2" height="2" fill="#ffffff" />
+      <rect x="20" y="16" width="2" height="2" fill="#ffffff" />
+    </svg>
+  `,
+  ground: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" shape-rendering="crispEdges">
+      <rect width="32" height="32" fill="#7a4b1e" />
+      <rect y="0" width="32" height="10" fill="#5fc44d" />
+      <rect y="10" width="32" height="4" fill="#4aa23a" />
+      <rect x="4" y="14" width="8" height="6" fill="#8f5a2a" />
+      <rect x="18" y="18" width="10" height="6" fill="#8f5a2a" />
+    </svg>
+  `,
+  brick: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" shape-rendering="crispEdges">
+      <rect width="32" height="32" fill="#c97b2d" />
+      <rect y="8" width="32" height="2" fill="#9b5a1a" />
+      <rect y="16" width="32" height="2" fill="#9b5a1a" />
+      <rect y="24" width="32" height="2" fill="#9b5a1a" />
+      <rect x="8" y="0" width="2" height="8" fill="#9b5a1a" />
+      <rect x="20" y="8" width="2" height="8" fill="#9b5a1a" />
+      <rect x="12" y="16" width="2" height="8" fill="#9b5a1a" />
+      <rect x="24" y="24" width="2" height="8" fill="#9b5a1a" />
+    </svg>
+  `,
+  question: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" shape-rendering="crispEdges">
+      <rect width="32" height="32" fill="#f4b400" />
+      <rect x="2" y="2" width="28" height="28" fill="none" stroke="#c98b00" stroke-width="4" />
+      <path d="M10 12h12v4h-4v4h-4v-4h-4z" fill="#ffffff" />
+      <rect x="14" y="22" width="4" height="4" fill="#ffffff" />
+    </svg>
+  `,
+  used: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" shape-rendering="crispEdges">
+      <rect width="32" height="32" fill="#b47b3d" />
+      <rect x="2" y="2" width="28" height="28" fill="none" stroke="#8a5a24" stroke-width="4" />
+    </svg>
+  `,
+  coin: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" shape-rendering="crispEdges">
+      <rect width="16" height="16" fill="none" />
+      <circle cx="8" cy="8" r="6" fill="#f7d447" stroke="#c98b00" stroke-width="2" />
+    </svg>
+  `,
+  bubble: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+      <circle cx="8" cy="8" r="6" fill="rgba(120,200,255,0.6)" stroke="#9cd7ff" stroke-width="2" />
+      <circle cx="6" cy="6" r="2" fill="rgba(255,255,255,0.8)" />
+    </svg>
+  `,
+  castle: `
+    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" shape-rendering="crispEdges">
+      <rect width="128" height="128" fill="none" />
+      <rect x="16" y="28" width="96" height="84" fill="#d9d2c5" stroke="#8c7b6a" stroke-width="4" />
+      <rect x="10" y="20" width="20" height="16" fill="#d9d2c5" stroke="#8c7b6a" stroke-width="4" />
+      <rect x="98" y="20" width="20" height="16" fill="#d9d2c5" stroke="#8c7b6a" stroke-width="4" />
+      <rect x="50" y="50" width="28" height="62" fill="#b35a2a" />
+      <rect x="28" y="44" width="16" height="16" fill="#4f6b8b" />
+      <rect x="84" y="44" width="16" height="16" fill="#4f6b8b" />
+      <rect x="60" y="16" width="8" height="12" fill="#c5391b" />
+    </svg>
+  `,
+};
+
+function makeSvgDataUri(svg) {
+  const trimmed = svg.trim().replace(/\s+/g, " ");
+  return `data:image/svg+xml;utf8,${encodeURIComponent(trimmed)}`;
+}
+
+const sprites = Object.fromEntries(
+  Object.entries(spriteSources).map(([key, svg]) => {
+    const image = new Image();
+    image.src = makeSvgDataUri(svg);
+    return [key, image];
+  })
+);
 
 const world = {
   gravity: 0.7,
@@ -38,6 +141,20 @@ const platforms = [
   { x: 1860, y: 280, width: 160, height: 18 },
   { x: 2100, y: 460, width: 900, height: 80 },
 ];
+
+const boxes = [
+  { x: 220, y: 300, width: 36, height: 36, type: "coin", hit: false },
+  { x: 270, y: 300, width: 36, height: 36, type: "coin", hit: false },
+  { x: 320, y: 300, width: 36, height: 36, type: "bubble", hit: false },
+  { x: 370, y: 300, width: 36, height: 36, type: "coin", hit: false },
+];
+
+const castle = {
+  x: 2800,
+  y: 260,
+  width: 160,
+  height: 180,
+};
 
 const enemies = [
   { x: 520, y: 280, width: 36, height: 32, velocityX: -1.2, alive: true },
@@ -147,12 +264,37 @@ function updatePlayer() {
     }
   });
 
+  boxes.forEach((box) => {
+    if (!isColliding(player, box)) return;
+
+    if (player.velocityY > 0 && player.y + player.height - player.velocityY <= box.y) {
+      player.y = box.y - player.height;
+      player.velocityY = 0;
+      player.onGround = true;
+    } else if (player.velocityY < 0 && player.y - player.velocityY >= box.y + box.height) {
+      player.y = box.y + box.height;
+      player.velocityY = 1;
+      if (!box.hit) {
+        box.hit = true;
+        if (box.type === "coin") {
+          world.score += 50;
+        }
+      }
+    } else if (player.velocityX > 0 && player.x + player.width - player.velocityX <= box.x) {
+      player.x = box.x - player.width;
+      player.velocityX = 0;
+    } else if (player.velocityX < 0 && player.x - player.velocityX >= box.x + box.width) {
+      player.x = box.x + box.width;
+      player.velocityX = 0;
+    }
+  });
+
   if (player.y > canvas.height) {
     world.lives = Math.max(0, world.lives - 1);
     respawn();
   }
 
-  world.cameraX = clamp(player.x - canvas.width * 0.4, 0, 2000);
+  world.cameraX = clamp(player.x - canvas.width * 0.4, 0, 2200);
 }
 
 function updateEnemies() {
@@ -192,38 +334,85 @@ function respawn() {
 function drawBackground() {
   context.fillStyle = "#69c0ff";
   context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = "#78c850";
-  context.fillRect(0, 420, canvas.width, 140);
+  context.fillStyle = "#b3e5ff";
+  context.fillRect(0, 0, canvas.width, 120);
 }
 
 function drawPlatform(platform) {
-  context.fillStyle = "#c68642";
-  context.fillRect(platform.x, platform.y, platform.width, platform.height);
-  context.fillStyle = "#7a4b1e";
-  context.fillRect(platform.x, platform.y, platform.width, 6);
+  const sprite = platform.height > 40 ? sprites.ground : sprites.brick;
+  drawTiledSprite(sprite, platform.x, platform.y, platform.width, platform.height);
 }
 
 function drawPlayer() {
-  context.fillStyle = "#ff3b30";
-  context.fillRect(player.x, player.y, player.width, player.height);
-  context.fillStyle = "#1f5da8";
-  context.fillRect(player.x, player.y + 28, player.width, 28);
-  context.fillStyle = "#f7d6b5";
-  context.fillRect(player.x + 8, player.y + 8, 24, 16);
-  context.fillStyle = "#333";
-  context.fillRect(player.x + 10, player.y + 12, 6, 6);
-  context.fillRect(player.x + 24, player.y + 12, 6, 6);
+  if (sprites.mario.complete) {
+    context.drawImage(sprites.mario, player.x, player.y, player.width, player.height);
+  } else {
+    context.fillStyle = "#ff3b30";
+    context.fillRect(player.x, player.y, player.width, player.height);
+  }
 }
 
 function drawEnemy(enemy) {
   if (!enemy.alive) return;
-  context.fillStyle = "#8b5a2b";
-  context.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-  context.fillStyle = "#f5d6a0";
-  context.fillRect(enemy.x + 6, enemy.y + 12, enemy.width - 12, 12);
-  context.fillStyle = "#222";
-  context.fillRect(enemy.x + 10, enemy.y + 18, 6, 6);
-  context.fillRect(enemy.x + enemy.width - 16, enemy.y + 18, 6, 6);
+  if (sprites.goomba.complete) {
+    context.drawImage(sprites.goomba, enemy.x, enemy.y, enemy.width, enemy.height);
+  } else {
+    context.fillStyle = "#8b5a2b";
+    context.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+  }
+}
+
+function drawBox(box) {
+  const sprite = box.hit ? sprites.used : sprites.question;
+  if (sprite.complete) {
+    context.drawImage(sprite, box.x, box.y, box.width, box.height);
+  } else {
+    context.fillStyle = "#f4b400";
+    context.fillRect(box.x, box.y, box.width, box.height);
+  }
+
+  const overlay = box.type === "coin" ? sprites.coin : sprites.bubble;
+  if (!box.hit && overlay.complete) {
+    const size = 16;
+    const offsetX = box.x + (box.width - size) / 2;
+    const offsetY = box.y + (box.height - size) / 2;
+    context.drawImage(overlay, offsetX, offsetY, size, size);
+  }
+}
+
+function drawCastle() {
+  if (sprites.castle.complete) {
+    context.drawImage(sprites.castle, castle.x, castle.y, castle.width, castle.height);
+  } else {
+    context.fillStyle = "#d9d2c5";
+    context.fillRect(castle.x, castle.y, castle.width, castle.height);
+  }
+}
+
+function drawTiledSprite(sprite, x, y, width, height) {
+  if (!sprite.complete) {
+    context.fillStyle = "#c68642";
+    context.fillRect(x, y, width, height);
+    return;
+  }
+
+  for (let tileX = 0; tileX < width; tileX += TILE_SIZE) {
+    for (let tileY = 0; tileY < height; tileY += TILE_SIZE) {
+      const drawWidth = Math.min(TILE_SIZE, width - tileX);
+      const drawHeight = Math.min(TILE_SIZE, height - tileY);
+      context.drawImage(
+        sprite,
+        0,
+        0,
+        TILE_SIZE,
+        TILE_SIZE,
+        x + tileX,
+        y + tileY,
+        drawWidth,
+        drawHeight
+      );
+    }
+  }
 }
 
 function draw() {
@@ -232,6 +421,8 @@ function draw() {
   drawBackground();
   context.translate(-world.cameraX, 0);
   platforms.forEach(drawPlatform);
+  boxes.forEach(drawBox);
+  drawCastle();
   enemies.forEach(drawEnemy);
   drawPlayer();
   context.restore();
