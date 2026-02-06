@@ -1,0 +1,15 @@
+{
+  "name": "Mario Mini",
+  "short_name": "MarioMini",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#8fd3ff",
+  "theme_color": "#1d2d44",
+  "icons": [
+    {
+      "src": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAEklEQVR42u3BAQ0AAADCoPdPbQ43oAAAAAAAAAAA4C8GqQAAepeTdQAAAABJRU5ErkJggg==",
+      "sizes": "64x64",
+      "type": "image/png"
+    }
+  ]
+}

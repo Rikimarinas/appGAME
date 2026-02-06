@@ -1,0 +1,111 @@
+:root {
+  color-scheme: light;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: #eaf6ff;
+}
+
+body {
+  margin: 0;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  background: linear-gradient(#8fd3ff, #eaf6ff 60%);
+}
+
+.game-shell {
+  position: relative;
+  width: min(96vw, 960px);
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  border: 4px solid #1d2d44;
+  background: #7ed0ff;
+  display: block;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  font-weight: 700;
+  color: #102a43;
+}
+
+.touch-controls {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: grid;
+  grid-template-columns: repeat(2, 60px);
+  grid-template-rows: repeat(2, 60px);
+  gap: 10px;
+}
+
+.touch-btn {
+  border-radius: 16px;
+  border: none;
+  background: rgba(16, 42, 67, 0.85);
+  color: #fff;
+  font-size: 1.4rem;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+}
+
+.touch-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.touch-btn[data-action="jump"] {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.touch-btn[data-action="run"] {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(16, 42, 67, 0.7);
+}
+
+.overlay-card {
+  background: #fff;
+  padding: 24px 32px;
+  border-radius: 18px;
+  text-align: center;
+  max-width: 300px;
+}
+
+.overlay-card button {
+  margin-top: 16px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: none;
+  background: #fcbf49;
+  font-weight: 700;
+}
+
+.medal {
+  position: absolute;
+  top: -20px;
+  right: 12px;
+  background: #ffe66d;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (min-width: 900px) {
+  .touch-controls {
+    display: none;
+  }
+}
