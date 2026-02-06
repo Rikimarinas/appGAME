@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>appGAME móvil</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="app__header">
+        <p class="app__tag">Demo móvil</p>
+        <h1>appGAME</h1>
+        <p class="app__subtitle">Optimizado para pantallas pequeñas y controles táctiles.</p>
+      </header>
+
+      <section class="panel">
+        <div class="panel__score">
+          <span>Score</span>
+          <strong id="score">0</strong>
+        </div>
+        <div class="panel__status" id="status">Listo para jugar</div>
+      </section>
+
+      <section class="arena" aria-label="Zona de juego">
+        <div class="arena__card" id="challenge">Toca “Jugar” para empezar</div>
+      </section>
+
+      <section class="controls" aria-label="Controles">
+        <button class="btn btn--primary" id="play">Jugar</button>
+        <button class="btn" id="bonus">Bonus</button>
+        <button class="btn btn--ghost" id="reset">Reiniciar</button>
+      </section>
+
+      <section class="tips">
+        <h2>Listo para web</h2>
+        <ul>
+          <li>Diseño adaptable con rejillas fluidas.</li>
+          <li>Botones grandes para uso táctil.</li>
+          <li>Texto legible y contraste alto.</li>
+        </ul>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
