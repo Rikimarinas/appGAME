@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>appGAME</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app__header">
+      <h1>appGAME</h1>
+      <p>Selecciona un juego del menú para comenzar.</p>
+    </header>
+
+    <main class="app__main">
+      <section class="menu" id="main-menu">
+        <h2>Archivo · Menú</h2>
+        <div class="menu__buttons">
+          <button class="menu__button" data-game="mario">Mario (burbuja)</button>
+          <button class="menu__button" data-game="placeholder-1">Juego 2 (próximamente)</button>
+          <button class="menu__button" data-game="placeholder-2">Juego 3 (próximamente)</button>
+        </div>
+      </section>
+
+      <section class="game" id="game-screen" hidden>
+        <div class="game__topbar">
+          <div class="game__status">
+            <span id="game-status">Listo para empezar</span>
+            <span id="power-status">Poder: 0</span>
+          </div>
+          <button class="game__exit" id="exit-game" title="Salir del juego">Salir</button>
+        </div>
+
+        <div class="game__layout">
+          <aside class="game__panel">
+            <h3>Configuración Mario (sin definir)</h3>
+            <label>
+              Cara de Mario
+              <input type="text" placeholder="Sin definir" disabled />
+            </label>
+            <label>
+              Enemigos
+              <input type="text" placeholder="Sin definir" disabled />
+            </label>
+            <label>
+              Saltos
+              <input type="text" placeholder="Sin definir" disabled />
+            </label>
+            <label>
+              Castillo (imagen)
+              <input type="text" placeholder="Sin definir" disabled />
+            </label>
+
+            <div class="legend">
+              <h4>Cajas iniciales</h4>
+              <ul>
+                <li>Caja 1 → L</li>
+                <li>Caja 2 → O</li>
+                <li>Caja 3 → V</li>
+                <li>Caja 4 → E</li>
+              </ul>
+              <p>Una caja tiene el poder (4 burbujas), las otras son monedas.</p>
+            </div>
+          </aside>
+
+          <div class="game__canvas-wrap">
+            <canvas id="game-canvas" width="900" height="480"></canvas>
+            <div class="game__controls">
+              <div class="joystick" id="joystick">
+                <button class="joystick__btn" data-dir="left">◀</button>
+                <button class="joystick__btn" data-dir="right">▶</button>
+              </div>
+              <div class="actions">
+                <button class="action__btn" id="jump-btn">Saltar</button>
+                <button class="action__btn" id="power-btn">Poder</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
