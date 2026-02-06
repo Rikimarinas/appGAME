@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AppGAME - Menú Mario</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header>
+        <h1>AppGAME</h1>
+        <p>Selecciona una opción para comenzar.</p>
+      </header>
+
+      <main>
+        <section class="menu" aria-label="Menú principal">
+          <button id="startMario" class="primary">Jugar Mario</button>
+          <button class="secondary" disabled>Próximamente</button>
+        </section>
+
+        <section id="gamePanel" class="hidden" aria-live="polite">
+          <div class="hud">
+            <span>Vida: <strong id="life">3</strong></span>
+            <span>Poder: <strong id="power">Normal</strong></span>
+            <span>Puntos: <strong id="score">0</strong></span>
+          </div>
+          <canvas id="gameCanvas" width="900" height="450"></canvas>
+          <div class="controls">
+            <p><strong>Controles:</strong> ← → para moverte, ↑ para saltar, espacio para turbo.</p>
+            <button id="backMenu" class="secondary">Volver al menú</button>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>Demo inspirada en Mario. Obstáculos, escaleras y enemigos incluidos.</p>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
