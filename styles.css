@@ -1,0 +1,112 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: #0e0f1a;
+  color: #eef0ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.app {
+  width: min(960px, 100%);
+  background: #16182b;
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+}
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0 0 8px;
+  font-size: 2.5rem;
+}
+
+.menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+button {
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: linear-gradient(135deg, #ff7a18, #ffb347);
+  color: #2a1c00;
+  font-weight: 600;
+}
+
+button.secondary {
+  background: #262a46;
+  color: #e7e8ff;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+#gamePanel {
+  display: grid;
+  gap: 16px;
+}
+
+.hidden {
+  display: none;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  background: #1f2238;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+}
+
+canvas {
+  width: 100%;
+  background: linear-gradient(180deg, #5dc4ff 0%, #a7e6ff 60%, #e6f7ff 100%);
+  border-radius: 16px;
+  border: 3px solid #20243e;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+footer {
+  text-align: center;
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
